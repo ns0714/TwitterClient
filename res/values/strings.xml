@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Twitter</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="login_label">Connect to Twitter</string>
+    <string name="title_activity_timeline">Home</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="username">Username</string>
+    <string name="user_screenname">User screen name</string>
+    <string name="body">Tweet</string>
+    <string name="time">Time</string>
+    <string name="no_network">No Network available</string>
+    <string name="compose_tweet">Compose tweet</string>
+    <string name="btn_tweet">Tweet</string>
+    <string name="tweet_hint">What\'s happening?</string>
+    <string name="tweet_counter">140</string>
+    <string name="user_id">\@</string>
+    <string name="title_activity_full_tweet">Tweet</string>
+	<string name="reply_tweet">Reply to Tweet</string>
+	<string name="reply">Reply</string>
+</resources>
