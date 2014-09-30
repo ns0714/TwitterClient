@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # RestClientTemplate
 
 ## Overview
@@ -245,8 +245,9 @@ t.save();
 
 That's all you need to get started. From here, hook up your activities and their behavior, adjust your models and add more REST endpoints.
 =======
+=======
+
 TwitterClient
 =============
 
 TwitterClient
->>>>>>> 269eaaffcaf3d99b714ac85f3024d94b2d454d9d
