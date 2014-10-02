@@ -4,7 +4,7 @@ Codepath assignment 3
 
 This is an Android application which allows users to see the Twitter timeline, compose tweets and view tweets.
 
-Time spent: 11 hours.
+Time spent: 16 hours.
 
 Completed user stories:
 - [x] Required: User can sign in to Twitter using OAuth login.
