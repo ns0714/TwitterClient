@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -39,7 +40,8 @@ public class TimelineActivity extends FragmentActivity implements
 	private ArrayList<Tweet> tweets;
 	private ArrayAdapter<Tweet> aTweets;
 	private PullToRefreshListView lvTweets;
-	private String max_id = "0";
+	private long max_id = 0;
+	private long since_id = 1;
 	private User user;
 	private String tweetMsg;
 
@@ -60,61 +62,63 @@ public class TimelineActivity extends FragmentActivity implements
 					Toast.LENGTH_SHORT).show();
 		}
 
-
 		lvTweets.setOnScrollListener(new EndlessScrollListener() {
 			@Override
 			public void onLoadMore(int page, int totalItemsCount) {
-				System.out.println("######" + totalItemsCount);
-				
 				populateTimeline();
 			}
 		});
-		
-		lvTweets.setOnRefreshListener(new OnRefreshListener(){
+
+		lvTweets.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
 			public void onRefresh() {
-				// TODO Auto-generated method stub
-				aTweets.clear();
-				max_id ="0";
+				// /aTweets.clear();
+				// max_id =0;
+				tweets.clear();
 				fetchTimelineAsync();
 			}
-
 		});
-		
 	}
 
 	private void fetchTimelineAsync() {
-		// TODO Auto-generated method stub
-		//tweets.clear();
+		// tweets.clear();
+		System.out.println("since_id" + since_id);
+		max_id = 0;
+
 		populateTimeline();
 		lvTweets.onRefreshComplete();
 	}
-	
+
 	private void populateTimeline() {
 		// TODO Auto-generated method stub
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-
-			@Override
-			public void onSuccess(JSONArray json) {
-				aTweets.addAll(Tweet.fromJSON(json));
-				max_id = Long.toString(tweets.get(tweets.size() - 1).getUid());
-				System.out.println("&&&&&&&MAX ID "
-						+ tweets.get(tweets.size() - 1).getUid());
-
-				aTweets.notifyDataSetChanged();
-				Log.d("DEBUG", json.toString());
-			};
-
-			@Override
-			public void onFailure(Throwable e, JSONObject s) {
-				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(),"JSON failed",
-						Toast.LENGTH_SHORT).show();
-				Log.d("DEBUG", e.toString());
-				Log.d("DEBUG", s.toString());
+		if (isNetworkAvailable()) {
+			if (tweets.size() > 0) {
+				max_id = tweets.get(tweets.size() - 1).getUid();
 			}
-		}, max_id);
+			client.getHomeTimeline(new JsonHttpResponseHandler() {
+
+				@Override
+				public void onSuccess(JSONArray json) {
+					aTweets.addAll(Tweet.fromJSON(json));
+					aTweets.notifyDataSetChanged();
+					Log.d("DEBUG", json.toString());
+				};
+
+				@Override
+				public void onFailure(Throwable e, JSONObject s) {
+					// TODO Auto-generated method stub
+					Toast.makeText(getApplicationContext(), "JSON failed",
+							Toast.LENGTH_SHORT).show();
+					Log.d("DEBUG", e.toString());
+					Log.d("DEBUG", s.toString());
+				}
+			}, since_id, max_id);
+		} else {
+			Toast.makeText(getApplicationContext(),
+					getResources().getString(R.string.no_network),
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	public void getUserCredntials() {
@@ -131,7 +135,8 @@ public class TimelineActivity extends FragmentActivity implements
 			@Override
 			public void onFailure(Throwable e, JSONObject js) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(), "Failed",
+				Toast.makeText(getApplicationContext(),
+						getResources().getString(R.string.failed),
 						Toast.LENGTH_SHORT).show();
 				Log.d("DEBUG", e.toString());
 				Log.d("DEBUG", js.toString());
@@ -170,31 +175,40 @@ public class TimelineActivity extends FragmentActivity implements
 
 	@Override
 	public void onFinishedComposingStatus(String status) {
-		// TODO Auto-generated method stub
 		tweetMsg = status;
-		System.out.println("STATUS " +tweetMsg);
 		postStatusMessage(tweetMsg);
 	}
 
 	private void postStatusMessage(String tweetMsg) {
-		// TODO Auto-generated method stub
 		client.postStatusUpdates(new JsonHttpResponseHandler() {
 			@Override
-			public void onSuccess(String arg0) {
-				// TODO Auto-generated method stub
-				//populateTimeline();
-				 aTweets.clear();
-                 max_id = "0";
-                 //populateTimeline();
-				System.out.println("SUCCESS!!!!!!!");
-				Log.d("DEBUG", arg0);
+			public void onSuccess(JSONObject json) {
+				Tweet tweet = Tweet.fromJSON(json);
+				max_id = tweet.getUid() + 1;
+
+				aTweets.insert(tweet, 0);
+
+				Log.d("DEBUG", json.toString());
 			}
-			
+
 			@Override
 			public void onFailure(Throwable arg0, String arg1) {
 				// TODO Auto-generated method stub
 				Log.d("DEBUG", arg1);
 			}
 		}, tweetMsg);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		if (requestCode == 50) {
+			if (resultCode == RESULT_OK) {
+				Tweet replyTweet = (Tweet) data.getSerializableExtra("tweet");
+				Toast.makeText(this, Tweet.getTweet().getBody(),
+						Toast.LENGTH_SHORT).show();
+				aTweets.insert(replyTweet, 0);
+			}
+		}
 	}
 }

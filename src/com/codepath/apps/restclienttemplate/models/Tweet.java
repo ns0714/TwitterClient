@@ -29,9 +29,38 @@ public class Tweet extends Model implements Serializable{
 	private String createdAt;
 	@Column(name ="user")
 	private User user;
-	@Column(name = "media_url")
+	@Column(name = "mediaUrl")
 	private String mediaUrl;
+	@Column(name = "retweetCount")
+	private int retweetCount;
+	@Column(name = "favCount")
+	private int favCount;
+	@Column(name = "retweeted")
+	private boolean retweeted;
+	@Column(name = "favorited")
+	private boolean favorited;
 	
+	
+	public boolean isRetweeted() {
+		return retweeted;
+	}
+
+	public boolean getFavorited() {
+		return favorited;
+	}
+
+	public int getRetweetCount() {
+		return retweetCount;
+	}
+
+	public int getFavCount() {
+		return favCount;
+	}
+
+	public static Tweet getTweet() {
+		return tweet;
+	}
+
 	static Tweet tweet;
 	
 	
@@ -79,7 +108,7 @@ public class Tweet extends Model implements Serializable{
 		}
 		
 		for(int i=0; i<tweets.size();i++){
-			System.out.println("@@@tweets" + tweets.get(i).getBody());
+			//System.out.println("@@@tweets" + tweets.get(i).getBody());
 		}
 		return tweets;
 	}
@@ -93,14 +122,21 @@ public class Tweet extends Model implements Serializable{
 			tweet.uid = jsonObject.getLong("id");
 			tweet.createdAt = jsonObject.getString("created_at");
 			tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
-			entitiesJson = jsonObject.getJSONObject("extended_entities");
+			entitiesJson = jsonObject.getJSONObject("entities");
+			tweet.retweetCount = jsonObject.getInt("retweet_count");
+			tweet.favCount = jsonObject.getInt("favorite_count");
+			System.out.println("*********"+ tweet.body+ "+++++"+ tweet.retweetCount + "&&&" + tweet.favCount);
+			
+			tweet.retweeted = jsonObject.getBoolean("retweeted");
+			tweet.favorited = jsonObject.getBoolean("favorited");
+			
 			if(entitiesJson != JSONObject.NULL){
 				mediaJson = entitiesJson.getJSONArray("media");
 				tweet.mediaUrl = mediaJson.getJSONObject(0).getString("media_url");
 				System.out.println("MEDIAAAAA*****" + tweet.mediaUrl);
 			}
 		} catch (JSONException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return tweet;
 	}
@@ -115,7 +151,6 @@ public class Tweet extends Model implements Serializable{
 			long dateMillis = sf.parse(getCreatedAt()).getTime();
 			relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
 					System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}	 

@@ -12,6 +12,7 @@
     <string name="body">Tweet</string>
     <string name="time">Time</string>
     <string name="no_network">No Network available</string>
+    <string name="failed">Json Request failed</string>
     <string name="compose_tweet">Compose tweet</string>
     <string name="btn_tweet">Tweet</string>
     <string name="tweet_hint">What\'s happening?</string>
@@ -20,4 +21,9 @@
     <string name="title_activity_full_tweet">Tweet</string>
 	<string name="reply_tweet">Reply to Tweet</string>
 	<string name="reply">Reply</string>
+	<string name="retweet_cnt">0</string>
+	<string name="fav_cnt">0</string>
+	<string name="retweet">RETWEETS</string>
+	<string name="favorites">FAVORITES</string>
+	<string name="media"> Media in tweet</string>
 </resources>

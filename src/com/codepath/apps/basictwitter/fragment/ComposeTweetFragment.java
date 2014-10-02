@@ -38,15 +38,14 @@ public class ComposeTweetFragment extends DialogFragment implements
 	}
 
 	public interface ComposeTweetFragmentListener {
-		 void onFinishedComposingStatus(String status);
+		void onFinishedComposingStatus(String status);
 	}
 
 	public static ComposeTweetFragment newInstance(String title, User user) {
 		ComposeTweetFragment dialog = new ComposeTweetFragment();
 		currUser = new User();
 		currUser = user;
-		 dialog.setStyle(dialog.STYLE_NO_FRAME,
-		 android.R.style.Theme_Holo_Light);
+		dialog.setStyle(dialog.STYLE_NO_FRAME, android.R.style.Theme_Holo_Light);
 		return dialog;
 	}
 
@@ -71,32 +70,27 @@ public class ComposeTweetFragment extends DialogFragment implements
 		tvFullName.setText(currUser.getName());
 		tvUserName.setText(getResources().getString(R.string.user_id)
 				+ currUser.getScreenName());
-		
-		System.out.println("#### " + currUser.getName()
-				+ currUser.getScreenName());
-		
-		
+
 		final TextWatcher mTextEditorWatcher = new TextWatcher() {
-		        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		        }
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
 
-		        public void onTextChanged(CharSequence s, int start, int before, int count) {
-		           //This sets a textview to the current length
-		        	System.out.println("#####" + Integer.parseInt(String.valueOf(s.length())));
-		        	//totalChars -=Integer.parseInt(String.valueOf(s.length()));
-		        	
-		            tvCounter.setText(Integer.toString(totalChars - Integer.parseInt(String.valueOf(s.length()))));
-		            System.out.println("@@@@" + totalChars);
-		        }
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// This sets a textview to the current length
 
-		        public void afterTextChanged(Editable s) {
-		        	
-		        }
+				tvCounter.setText(Integer.toString(totalChars
+						- Integer.parseInt(String.valueOf(s.length()))));
+			}
+
+			public void afterTextChanged(Editable s) {
+
+			}
 		};
-		
-		
+
 		etTweetMsg.addTextChangedListener(mTextEditorWatcher);
-		
+
 		btnTweet.setOnClickListener(this);
 		return view;
 	}
@@ -107,10 +101,10 @@ public class ComposeTweetFragment extends DialogFragment implements
 		switch (v.getId()) {
 		case R.id.btnTweet: {
 
-			ComposeTweetFragmentListener listener = (ComposeTweetFragmentListener)getActivity();
+			ComposeTweetFragmentListener listener = (ComposeTweetFragmentListener) getActivity();
 			status = etTweetMsg.getText().toString();
 
-			System.out.println("This is status " + status);
+			// System.out.println("This is status " + status);
 			listener.onFinishedComposingStatus(status);
 			dismiss();
 		}
@@ -118,8 +112,6 @@ public class ComposeTweetFragment extends DialogFragment implements
 	}
 
 	public void setUpDialog() {
-		// getDialog().setTitle(getResources().getText("");
-		// getDialog().getActionBar().hide();
 		getDialog().getWindow().setBackgroundDrawable(
 				new ColorDrawable(getResources().getColor(R.color.white)));
 		final WindowManager.LayoutParams params = getDialog().getWindow()

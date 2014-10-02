@@ -19,15 +19,23 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
-	int i=1;
+
 	private static class ViewHolder {
 		private ImageView ivProfileImage;
 		private TextView tvUserName;
 		private TextView tvBody;
 		private TextView tvScreenName;
 		private TextView tvTimeStamp;
+		private ImageView ivMedia;
+		private ImageView ivReply;
+		private ImageView ivRetweet;
+		private ImageView ivFav;
+		private TextView tvRetweetCnt;
+		private TextView tvFavCnt;
 	}
+
 	private Context context;
+
 	public TwitterArrayAdapter(Context context, List<Tweet> tweets) {
 		super(context, 0, tweets);
 		this.context = context;
@@ -45,17 +53,34 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 			viewHolder = new ViewHolder();
 			LayoutInflater inflator = LayoutInflater.from(getContext());
 			convertView = inflator.inflate(R.layout.tweet_item, parent, false);
-			viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfileImage);
-			viewHolder.tvUserName = (TextView) convertView.findViewById(R.id.tvUsername);
-			viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvBody);
-			viewHolder.tvBody.setMovementMethod(LinkMovementMethod.getInstance());
-			viewHolder.tvScreenName = (TextView) convertView.findViewById(R.id.tvScreenName);
-			viewHolder.tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimestamp);
+			viewHolder.ivProfileImage = (ImageView) convertView
+					.findViewById(R.id.ivProfileImage);
+			viewHolder.tvUserName = (TextView) convertView
+					.findViewById(R.id.tvUsername);
+			viewHolder.tvBody = (TextView) convertView
+					.findViewById(R.id.tvBody);
+			viewHolder.tvBody.setMovementMethod(LinkMovementMethod
+					.getInstance());
+			viewHolder.tvScreenName = (TextView) convertView
+					.findViewById(R.id.tvScreenName);
+			viewHolder.tvTimeStamp = (TextView) convertView
+					.findViewById(R.id.tvTimestamp);
+			viewHolder.ivMedia = (ImageView) convertView
+					.findViewById(R.id.ivMedia);
+			viewHolder.ivReply = (ImageView) convertView
+					.findViewById(R.id.ivReply);
+			viewHolder.ivRetweet = (ImageView) convertView
+					.findViewById(R.id.ivRetweet);
+			viewHolder.ivFav = (ImageView) convertView
+					.findViewById(R.id.ivFavorite);
+			viewHolder.tvRetweetCnt = (TextView) convertView
+					.findViewById(R.id.tvRetweetCnt);
+			viewHolder.tvFavCnt = (TextView) convertView
+					.findViewById(R.id.tvFavCnt);
 			convertView.setTag(viewHolder);
 		} else {
-			viewHolder = (ViewHolder)convertView.getTag();
+			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		
 
 		viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
 		ImageLoader imgLoader = ImageLoader.getInstance();
@@ -64,10 +89,33 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 		viewHolder.tvUserName.setText(tweet.getUser().getName());
 		viewHolder.tvBody.setText(tweet.getBody());
 		viewHolder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
-		viewHolder.tvTimeStamp.setText(tweet.getRelativeTimeAgo(tweet.getCreatedAt()));
-		 System.out.println("****** " + i +" --" + tweet.getUid());
-		 i++;
-
+		viewHolder.tvTimeStamp.setText(tweet.getRelativeTimeAgo(tweet
+				.getCreatedAt()));
+	
+		viewHolder.tvRetweetCnt.setText(String.valueOf(tweet.getRetweetCount()));
+		viewHolder.tvFavCnt.setText(String.valueOf(tweet.getFavCount()));
+		
+		if(tweet.getFavorited()){
+			viewHolder.ivFav.setImageResource(R.drawable.star_on);
+		}else{
+			viewHolder.ivFav.setImageResource(R.drawable.favstar_off);
+		}
+		
+		if(tweet.isRetweeted()){
+			viewHolder.ivRetweet.setImageResource(R.drawable.ic_retweeted);
+		}else{
+			viewHolder.ivRetweet.setImageResource(R.drawable.ic_retweet);
+		}
+		
+		if (tweet.getMediaUrl() != null) {
+			//viewHolder.ivMedia.setImageResource(android.R.color.transparent);
+			ImageLoader mediaLoader = ImageLoader.getInstance();
+			mediaLoader.displayImage(tweet.getMediaUrl(), viewHolder.ivMedia);
+			viewHolder.ivMedia.setVisibility(View.VISIBLE);
+		} else {
+			viewHolder.ivMedia.setVisibility(View.GONE);
+		}
+		
 		convertView.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -78,22 +126,6 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 				context.startActivity(i);
 			}
 		});
-
-		/*
-		 * @Override public void onItemClick(AdapterView<?> parent, View view,
-		 * int position, long id) { Intent i = new Intent(TimelineActivity.this,
-		 * FullTweetActivity.class);
-		 * 
-		 * Toast.makeText(getApplicationContext(), "CANT CLICK",
-		 * Toast.LENGTH_SHORT).show(); client.getFullStatus(new
-		 * JsonHttpResponseHandler(){
-		 * 
-		 * @Override public void onSuccess(JSONObject jsonObj) { // TODO
-		 * Auto-generated method stub tweet = Tweet.fromJSON(jsonObj); } },
-		 * Long.toString(tweets.get(position).getUid()));
-		 * 
-		 * i.putExtra("tweet", tweet); startActivity(i); } });
-		 */
 
 		return convertView;
 

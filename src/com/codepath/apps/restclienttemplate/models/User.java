@@ -18,7 +18,6 @@ public class User implements Serializable{
 		User user = new User();
 		try {
 			user.name = json.getString("name");
-			//System.out.println("@@@@@" + user.name);
 			user.uid = json.getLong("id");
 			user.screenName = json.getString("screen_name");
 			user.profileImageUrl = json.getString("profile_image_url");
@@ -41,8 +40,6 @@ public class User implements Serializable{
 		return user;
 	}
 	
-	
-	
 	public String getName() {
 		return name;
 	}
@@ -59,5 +56,3 @@ public class User implements Serializable{
 		return profileImageUrl;
 	}
 	}
-
-
