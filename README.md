@@ -19,7 +19,6 @@ Completed user stories:
  * User is taken back to home timeline with new tweet visible in timeline
  * Optional: User can see a counter with total number of characters left for tweet
 - [x] Advanced: User can refresh tweets timeline by pulling down to refresh.
-- [ ] Advanced: User can open the twitter app offline and see last loaded tweets.
 - [x] Advanced: User can tap a tweet to display a "detailed" view of that tweet
 - [x] Advanced: User can select "reply" from detail view to respond to a tweet. 
 - [x] Advanced: Improve the user interface and theme the app to feel "twitter branded"
