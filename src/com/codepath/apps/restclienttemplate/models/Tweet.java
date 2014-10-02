@@ -106,10 +106,6 @@ public class Tweet extends Model implements Serializable{
 				tweets.add(tweet);
 			}
 		}
-		
-		for(int i=0; i<tweets.size();i++){
-			//System.out.println("@@@tweets" + tweets.get(i).getBody());
-		}
 		return tweets;
 	}
 
@@ -125,7 +121,6 @@ public class Tweet extends Model implements Serializable{
 			entitiesJson = jsonObject.getJSONObject("entities");
 			tweet.retweetCount = jsonObject.getInt("retweet_count");
 			tweet.favCount = jsonObject.getInt("favorite_count");
-			System.out.println("*********"+ tweet.body+ "+++++"+ tweet.retweetCount + "&&&" + tweet.favCount);
 			
 			tweet.retweeted = jsonObject.getBoolean("retweeted");
 			tweet.favorited = jsonObject.getBoolean("favorited");
@@ -133,7 +128,6 @@ public class Tweet extends Model implements Serializable{
 			if(entitiesJson != JSONObject.NULL){
 				mediaJson = entitiesJson.getJSONArray("media");
 				tweet.mediaUrl = mediaJson.getJSONObject(0).getString("media_url");
-				System.out.println("MEDIAAAAA*****" + tweet.mediaUrl);
 			}
 		} catch (JSONException ex) {
 			//ex.printStackTrace();

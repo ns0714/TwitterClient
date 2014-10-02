@@ -83,7 +83,6 @@ public class TimelineActivity extends FragmentActivity implements
 
 	private void fetchTimelineAsync() {
 		// tweets.clear();
-		System.out.println("since_id" + since_id);
 		max_id = 0;
 
 		populateTimeline();

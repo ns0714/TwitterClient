@@ -104,7 +104,6 @@ public class ComposeTweetFragment extends DialogFragment implements
 			ComposeTweetFragmentListener listener = (ComposeTweetFragmentListener) getActivity();
 			status = etTweetMsg.getText().toString();
 
-			// System.out.println("This is status " + status);
 			listener.onFinishedComposingStatus(status);
 			dismiss();
 		}
