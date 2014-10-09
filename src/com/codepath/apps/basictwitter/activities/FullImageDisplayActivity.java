@@ -16,33 +16,40 @@ public class FullImageDisplayActivity extends Activity {
 
 	private Tweet tweet;
 	private TouchImageView ivImageResult;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_full_image_display);
-		
+
 		tweet = (Tweet) getIntent().getSerializableExtra("tweet");
 
-		ivImageResult = (TouchImageView)findViewById(R.id.ivImageResult);
-		Picasso.with(this).load(tweet.getMediaUrl()).resize(600, 600).into(ivImageResult, new Callback() {
-			
-			@Override
-			public void onSuccess() {
-			}
-			
-			@Override
-			public void onError() {
-				Toast.makeText(FullImageDisplayActivity.this, 
-						getResources().getString(R.string.error_fullimage), Toast.LENGTH_LONG).show();
-			}
-		});
+		ivImageResult = (TouchImageView) findViewById(R.id.ivImageResult);
+		Picasso.with(this).load(tweet.getMediaUrl()).resize(600, 600)
+				.into(ivImageResult, new Callback() {
+
+					@Override
+					public void onSuccess() {
+					}
+
+					@Override
+					public void onError() {
+						Toast.makeText(
+								FullImageDisplayActivity.this,
+								getResources().getString(
+										R.string.error_fullimage),
+								Toast.LENGTH_LONG).show();
+					}
+				});
 		getCustomizedActionBar();
 	}
-	
-	void getCustomizedActionBar(){
-		ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.transperant_white));
+
+	void getCustomizedActionBar() {
+		ColorDrawable colorDrawable = new ColorDrawable(getResources()
+				.getColor(R.color.transperant_white));
 		getActionBar().setBackgroundDrawable(colorDrawable);
-		getActionBar().setTitle(Html.fromHtml(
-				"<font color='#4F4F4F'>"+ "@" + tweet.getUser().getScreenName() +"</font>"));
+		getActionBar().setTitle(
+				Html.fromHtml("<font color='#4F4F4F'>" + "@"
+						+ tweet.getUser().getScreenName() + "</font>"));
 	}
 }

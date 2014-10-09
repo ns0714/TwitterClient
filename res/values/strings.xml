@@ -31,11 +31,12 @@
     <string name="following">FOLLOWING</string>
     <string name="tweets">TWEETS</string>
     <string name="followers">FOLLOWERS</string>
+    <string name="messages">messages</string>
     <string name="search">Search</string>
     <string name=" error_fullimage">error loading full image</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_user_list">UserListActivity</string>
     <string name="title_activity_full_image_display">FullImageDisplayActivity</string>
-    <string name="title_activity_direct_message">DirectMessageActivity</string>
+    <string name="title_activity_direct_message">Messages</string>
 
 </resources>

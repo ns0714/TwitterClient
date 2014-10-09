@@ -25,17 +25,17 @@ import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 @Table(name = "Tweets")
-public class Tweet extends Model implements Serializable{
-	
+public class Tweet extends Model implements Serializable {
+
 	private static final long serialVersionUID = -5733801136443403137L;
-	
-	@Column(name ="body")
+
+	@Column(name = "body")
 	private String body;
-	@Column(name ="uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+	@Column(name = "uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
-	@Column(name ="createdAt")
+	@Column(name = "createdAt")
 	private String createdAt;
-	@Column(name ="user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
+	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
 	@Column(name = "mediaUrl")
 	private String mediaUrl;
@@ -49,17 +49,18 @@ public class Tweet extends Model implements Serializable{
 	private boolean favorited;
 	private long id_str;
 	private boolean is_retweeted;
-	
+	private User sender;
+
 	public long isId_str() {
 		return id_str;
 	}
 
 	static Tweet tweet;
-	
+
 	public Tweet() {
 		super();
 	}
-	
+
 	public boolean isRetweeted() {
 		return retweeted;
 	}
@@ -126,36 +127,89 @@ public class Tweet extends Model implements Serializable{
 
 	public static Tweet fromJSON(JSONObject jsonObject) {
 		Tweet tweet = new Tweet();
-		JSONObject entitiesJson;
-		JSONObject retweetedJson;
-		JSONArray mediaJson;
+
 		try {
 			tweet.body = jsonObject.getString("text");
 			tweet.uid = jsonObject.getLong("id");
 			tweet.createdAt = jsonObject.getString("created_at");
-			tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
-			entitiesJson = jsonObject.getJSONObject("entities");
+			tweet.user = getUser(jsonObject);
+			// tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+			/*
+			 * if (jsonObject.getJSONObject("sender") != JSONObject.NULL) {
+			 * tweet.user = User.fromJSON(jsonObject.getJSONObject("sender")); }
+			 */
+			// entitiesJson = jsonObject.getJSONObject("entities");
+			tweet.mediaUrl = getMediaUrl(jsonObject);
 			tweet.retweetCount = jsonObject.getInt("retweet_count");
 			tweet.favCount = jsonObject.getInt("favorite_count");
-			
+
 			tweet.retweeted = jsonObject.getBoolean("retweeted");
 			tweet.favorited = jsonObject.getBoolean("favorited");
 			tweet.id_str = jsonObject.getLong("id_str");
-			retweetedJson = jsonObject.getJSONObject("retweeted_status");
-			if(entitiesJson != JSONObject.NULL){
-				mediaJson = entitiesJson.getJSONArray("media");
-				tweet.mediaUrl = mediaJson.getJSONObject(0).getString("media_url");
-			}
-			
-			if(retweetedJson != JSONObject.NULL){
-				tweet.is_retweeted = true;
-				System.out.println("YAYYYYYY" + tweet.getBody());
-			}
+			tweet.is_retweeted = getRetweetedStatus(jsonObject);
 		} catch (JSONException ex) {
+			System.out.println("User not found");
+			ex.printStackTrace();
 		}
 		return tweet;
 	}
-	
+
+	public static User getUser(JSONObject json) {
+		JSONObject userJson;
+		User user = null;
+		try {
+			userJson = json.getJSONObject("user");
+			if (userJson != JSONObject.NULL) {
+				user = User.fromJSON(userJson);
+			}
+		} catch (JSONException ex) {
+			try {
+				userJson = json.getJSONObject("sender");
+				if (userJson != JSONObject.NULL) {
+					user = User.fromJSON(userJson);
+				}
+			} catch (JSONException e) {
+				user = null;
+			}
+		}
+		return user;
+	}
+
+	public static boolean getRetweetedStatus(JSONObject json) {
+		JSONObject retweetedJson;
+		boolean isRetweeted = false;
+		try {
+			retweetedJson = json.getJSONObject("retweeted_status");
+			if (retweetedJson != JSONObject.NULL) {
+				isRetweeted = true;
+			}
+		} catch (JSONException ex) {
+			isRetweeted = false;
+		}
+		return isRetweeted;
+	}
+
+	public static String getMediaUrl(JSONObject mediaJson) {
+		JSONObject entitiesJson;
+		String mediaUurl = null;
+		JSONArray mediaJsonArray;
+		try {
+			entitiesJson = mediaJson.getJSONObject("entities");
+			if (entitiesJson != JSONObject.NULL) {
+				mediaJsonArray = entitiesJson.getJSONArray("media");
+				mediaUurl = mediaJsonArray.getJSONObject(0).getString(
+						"media_url");
+			}
+		} catch (JSONException ex) {
+			mediaUurl = null;
+		}
+		return mediaUurl;
+	}
+
+	public User getSender() {
+		return sender;
+	}
+
 	public boolean isIs_retweeted() {
 		return is_retweeted;
 	}
@@ -167,28 +221,29 @@ public class Tweet extends Model implements Serializable{
 	public String getRelativeTimeAgo(String rawJsonDate) {
 		String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 		String time = "";
-		SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+		SimpleDateFormat sf = new SimpleDateFormat(twitterFormat,
+				Locale.ENGLISH);
 		sf.setLenient(true);
-	 
+
 		String relativeDate = "";
 		try {
 			long dateMillis = sf.parse(getCreatedAt()).getTime();
 			relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-					System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+					System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS)
+					.toString();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}	 
+		}
 		String[] relativeTime = relativeDate.split(" ");
-		//System.out.println("@@@@" + relativeDate);
-		if(relativeTime.length > 1){
+		// System.out.println("@@@@" + relativeDate);
+		if (relativeTime.length > 1) {
 			time = relativeTime[0] + relativeTime[1].charAt(0);
-		}else{
+		} else {
 			time = relativeTime[0];
 		}
-		System.out.println("!!!" +time);
 		return time;
 	}
-	
+
 	public String getFormatedTime(long createdTime) {
 		String formattedTime = "";
 		Calendar instance = Calendar.getInstance();
@@ -206,20 +261,18 @@ public class Tweet extends Model implements Serializable{
 		} else if (diffInHours >= 1 && diffInHours < 24) {
 			formattedTime = diffInHours + "h";
 		} else if (diffInDays >= 1) {
-			formattedTime = diffInDays +"d";
+			formattedTime = diffInDays + "d";
 		}
 
 		return formattedTime;
 	}
-	
+
 	public static List<Tweet> getAll() {
-        // This is how you execute a query
-        return new Select()
-          .from(Tweet.class)
-          .execute();
-    }
-	
-	public static void deleteAll(){
+		// This is how you execute a query
+		return new Select().from(Tweet.class).execute();
+	}
+
+	public static void deleteAll() {
 		new Delete().from(Tweet.class).execute();
 	}
 }

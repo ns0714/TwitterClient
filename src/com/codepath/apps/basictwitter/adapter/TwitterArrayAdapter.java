@@ -2,9 +2,12 @@ package com.codepath.apps.basictwitter.adapter;
 
 import java.util.List;
 
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,18 +15,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.activities.FullImageDisplayActivity;
 import com.codepath.apps.basictwitter.activities.FullTweetActivity;
 import com.codepath.apps.basictwitter.activities.ProfileActivity;
-import com.codepath.apps.basictwitter.helper.TwitterHelper;
+import com.codepath.apps.basictwitter.client.TwitterApplication;
+import com.codepath.apps.basictwitter.client.TwitterClient;
+import com.codepath.apps.basictwitter.helper.NetworkCheckHelper;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 
+	private User user;
 	private static class ViewHolder {
 		private ImageView ivProfileImage;
 		private TextView tvUserName;
@@ -41,6 +49,7 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 	}
 
 	private Context context;
+	TwitterClient client;
 
 	public TwitterArrayAdapter(Context context, List<Tweet> tweets) {
 		super(context, 0, tweets);
@@ -50,6 +59,7 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final Tweet tweet = getItem(position);
+		client = TwitterApplication.getRestClient();
 		ViewHolder viewHolder;
 
 		if (convertView == null) {
@@ -89,17 +99,17 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		viewHolder.tvIfRetweeted.setVisibility(View.VISIBLE);
-		viewHolder.ivRetweetIc.setVisibility(View.VISIBLE);
+		viewHolder.tvIfRetweeted.setVisibility(View.GONE);
+		viewHolder.ivRetweetIc.setVisibility(View.GONE);
 		
-		if((tweet.isRetweeted())){
+		/*if((tweet.isRetweeted())){
 			viewHolder.tvIfRetweeted.setVisibility(View.VISIBLE);
-			viewHolder.tvIfRetweeted.setText(tweet.getUser().getName() + "  retweeted");
+			viewHolder.tvIfRetweeted.setText(user.getName() + "  retweeted");
 			viewHolder.ivRetweetIc.setVisibility(View.VISIBLE);
 		}else{
 			viewHolder.tvIfRetweeted.setVisibility(View.GONE);
 			viewHolder.ivRetweetIc.setVisibility(View.GONE);
-		}
+		}*/
 		
 		viewHolder.ivProfileImage.setImageResource(android.R.color.transparent);
 		ImageLoader imgLoader = ImageLoader.getInstance();
@@ -169,5 +179,4 @@ public class TwitterArrayAdapter extends ArrayAdapter<Tweet> {
 		return convertView;
 
 	}
-
 }

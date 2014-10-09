@@ -1,7 +1,11 @@
 package com.codepath.apps.basictwitter.helper;
 
+import com.codepath.apps.basictwitter.client.TwitterClient;
+import com.codepath.apps.restclienttemplate.models.User;
 
 public class TwitterHelper {
+static User user;
+static TwitterClient client;
 
 	public static String convertNumbers(int num) {
 		int i = 0;
@@ -19,6 +23,4 @@ public class TwitterHelper {
 		}
 		return convNum.toString();
 	}
-	
-	
 }

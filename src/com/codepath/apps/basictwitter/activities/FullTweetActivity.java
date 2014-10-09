@@ -25,7 +25,8 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class FullTweetActivity extends FragmentActivity implements OnClickListener {
+public class FullTweetActivity extends FragmentActivity implements
+		OnClickListener {
 
 	private ImageView ivImg;
 	private TextView tvFullName;
@@ -44,6 +45,7 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 	private String tweetMsg;
 	private Tweet tweet;
 	private TwitterClient client;
+	private int favCnt;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,63 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 
 		tweet = (Tweet) getIntent().getSerializableExtra("tweet");
 
+		initializeUIComponents();
+		loadUIComponents();
+
+		ivReplyIcon.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				openCompose();
+			}
+		});
+
+		ivFavIcon.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				client.postFavoriteToStatus(new JsonHttpResponseHandler() {
+					@Override
+					public void onSuccess(JSONObject jsonObj) {
+						ivFavIcon.setImageResource(R.drawable.ic_fav_star_on);
+					}
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						super.onFailure(arg0, arg1);
+					}
+				}, Long.toString(tweet.isId_str()));
+			}
+		});
+
+		ivRetweetIcon.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				client.postRetweetStatus(new JsonHttpResponseHandler() {
+					@Override
+					public void onSuccess(JSONObject jsonObj) {
+						ivRetweetIcon.setImageResource(R.drawable.ic_re_tweet);
+					}
+
+					@Override
+					public void onFailure(Throwable arg0, JSONObject arg1) {
+						super.onFailure(arg0, arg1);
+					}
+				}, Long.toString(tweet.isId_str()));
+			}
+		});
+
+		ivShareIcon.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				onShareItem();
+			}
+		});
+	}
+
+	public void initializeUIComponents() {
 		ivImg = (ImageView) findViewById(R.id.ivImg);
 		tvFullName = (TextView) findViewById(R.id.tvUser);
 		tvScreenName = (TextView) findViewById(R.id.tvscreenName);
@@ -68,59 +127,10 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 		ivRetweetIcon = (ImageView) findViewById(R.id.ivRetweetIcon);
 		ivReplyIcon = (ImageView) findViewById(R.id.ivReplyIcon);
 		ivShareIcon = (ImageView) findViewById(R.id.ivShareIcon);
-		
-		ivReplyIcon.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				openCompose();				
-			}
-		});
-		
-		ivFavIcon.setOnClickListener(new OnClickListener() {
+	}
 
-			@Override
-			public void onClick(View v) {
-				client.postFavoriteToStatus(new JsonHttpResponseHandler(){
-					@Override
-					public void onSuccess(JSONObject jsonObj) {
-						System.out.println("Success");
-						ivFavIcon.setImageResource(R.drawable.ic_fav_star_on);
-					}
-					
-					@Override
-					public void onFailure(Throwable arg0, JSONObject arg1) {
-						super.onFailure(arg0, arg1);
-					}
-				}, Long.toString(tweet.isId_str()));
-			}
-	});
+	private void loadUIComponents() {
 		
-		ivRetweetIcon.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				client.postRetweetStatus(new JsonHttpResponseHandler(){
-					@Override
-					public void onSuccess(int arg0, String arg1) {
-						ivRetweetIcon.setImageResource(R.drawable.ic_re_tweet);
-					}
-					
-					@Override
-					public void onFailure(Throwable arg0, JSONObject arg1) {
-						super.onFailure(arg0, arg1);
-					}
-				}, Long.toString(tweet.isId_str()));
-			}
-		});
-		
-		ivShareIcon.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				onShareItem();
-			}
-		});
 		ivImg.setImageResource(android.R.color.transparent);
 		ImageLoader imgLoader = ImageLoader.getInstance();
 		imgLoader.displayImage(tweet.getUser().getProfileImageUrl(), ivImg);
@@ -139,6 +149,9 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 
 		if (tweet.getFavorited()) {
 			ivFavIcon.setImageResource(R.drawable.ic_fav_star_on);
+			favCnt = favCnt + 1;
+			tvFavorites.setText(Html.fromHtml("<b>" + favCnt + "</b>" + " "
+					+ getResources().getString(R.string.favorites)));
 		} else {
 			ivFavIcon.setImageResource(R.drawable.ic_fav_star_off);
 		}
@@ -156,7 +169,6 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 		} else {
 			ivMediaUrl.setVisibility(View.GONE);
 		}
-		
 	}
 
 	@Override
@@ -190,26 +202,19 @@ public class FullTweetActivity extends FragmentActivity implements OnClickListen
 					Toast.LENGTH_SHORT).show();
 		}
 	}
-	
-	public void openCompose(){
+
+	public void openCompose() {
 		FragmentManager frag = getSupportFragmentManager();
 		ComposeTweetFragment diag = ComposeTweetFragment.newInstance(
-				"Compose Tweets", tweet.getUser(), tweet.getUser().getScreenName());
+				"Compose Tweets", tweet.getUser(), tweet.getUser()
+						.getScreenName());
 		diag.show(frag, "compose_tweet");
 	}
-	
-	public void onShareItem() {
-	        // Construct a ShareIntent with link to image
-	        Intent shareIntent = new Intent();
-	        shareIntent.setAction(Intent.ACTION_SEND);
-	        shareIntent.putExtra(Intent.EXTRA_STREAM, tweetMsg);
-	        //shareIntent.setType("image/*");
-	        // Launch sharing dialog for image
-	        startActivity(Intent.createChooser(shareIntent, "Share Image"));	
-	    } /*else {
-	    	Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_fullimage), 
-	    			Toast.LENGTH_SHORT).show();
-	    			}
-	    }*/
 
+	public void onShareItem() {
+		Intent shareIntent = new Intent();
+		shareIntent.setAction(Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_STREAM, tweetMsg);
+		startActivity(Intent.createChooser(shareIntent, "Share Image"));
+	}
 }
