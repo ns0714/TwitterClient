@@ -16,9 +16,9 @@ Completed user stories:
 - [x] Required: User can navigate to view their own profile
   * User can see picture, tagline, # of followers, # of following, and tweets on their profile.
 - [x] Required: User can click on the profile image in any tweet to see another user's profile.
-- * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
-- * Profile view should include that user's timeline
-- * Optional: User can view following / followers list through the profile
+  * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+  * Profile view should include that user's timeline
+  * Optional: User can view following / followers list through the profile
 - [x] Advanced: User can tap a tweet to display a "detailed" view of that tweet
 - [x] Advanced: User can select "reply" from detail view to respond to a tweet. 
 - [x] Advanced: Improve the user interface and theme the app to feel "twitter branded"
@@ -81,7 +81,7 @@ Walkthrough of all user stories:
 Gif Image
 
 
-![Alt Text]()
+![Alt Text](TwitterAdvanced.gif)
 
 
 
