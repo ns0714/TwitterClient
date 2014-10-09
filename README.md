@@ -10,15 +10,15 @@ Time spent: 18 hours.
 Completed user stories:
 - [x] Required: Includes all required user stories from Week 3 Twitter Client
 - [x] Required: User can switch between Timeline and Mention views using tabs.
-   * User can view their home timeline tweets.
-   * User can view the recent mentions of their username.
-   * User can scroll to bottom of either of these lists and new tweets will load ("infinite scroll")
+  * User can view their home timeline tweets.
+  * User can view the recent mentions of their username.
+  * User can scroll to bottom of either of these lists and new tweets will load ("infinite scroll")
 - [x] Required: User can navigate to view their own profile
-   * User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+  * User can see picture, tagline, # of followers, # of following, and tweets on their profile.
 - [x] Required: User can click on the profile image in any tweet to see another user's profile.
--  * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
--  * Profile view should include that user's timeline
--  * Optional: User can view following / followers list through the profile
+- * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+- * Profile view should include that user's timeline
+- * Optional: User can view following / followers list through the profile
 - [x] Advanced: User can tap a tweet to display a "detailed" view of that tweet
 - [x] Advanced: User can select "reply" from detail view to respond to a tweet. 
 - [x] Advanced: Improve the user interface and theme the app to feel "twitter branded"
@@ -32,7 +32,7 @@ Completed user stories:
 - [x] Advanced: User can take favorite (and unfavorite) or reweet actions on a tweet
 - [x] Advanced: Improve the user interface and theme the app to feel twitter branded
 - [x] Advanced: User can search for tweets matching a particular query and see results
-- [ ] Bonus: User can view their direct messages (or send new ones)
+- [x] Bonus: User can view their direct messages
              
 Libraries used : PullToRefreshListView.
 
