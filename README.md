@@ -1,3 +1,50 @@
+
+Advanced Twitter Client
+==========================
+Codepath assignment 4
+
+This is an Android application which allows users to see the Twitter timeline, compose tweets and view tweets.
+
+Time spent: 18 hours.
+
+Completed user stories:
+- [x] Required: Includes all required user stories from Week 3 Twitter Client
+- [x] Required: User can switch between Timeline and Mention views using tabs.
+   * User can view their home timeline tweets.
+   * User can view the recent mentions of their username.
+   * User can scroll to bottom of either of these lists and new tweets will load ("infinite scroll")
+- [x] Required: User can navigate to view their own profile
+   * User can see picture, tagline, # of followers, # of following, and tweets on their profile.
+- [x] Required: User can click on the profile image in any tweet to see another user's profile.
+-  * User can see picture, tagline, # of followers, # of following, and tweets of clicked user.
+-  * Profile view should include that user's timeline
+-  * Optional: User can view following / followers list through the profile
+- [x] Advanced: User can tap a tweet to display a "detailed" view of that tweet
+- [x] Advanced: User can select "reply" from detail view to respond to a tweet. 
+- [x] Advanced: Improve the user interface and theme the app to feel "twitter branded"
+- [x] Bonus: User can see embedded image media within the tweet detail view
+- [x] Bonus: Compose activity is replaced with a modal overlay
+- [x] Advanced: Robust error handling, check if internet is available, handle error cases, network failures
+- [x] Advanced: When a network request is sent, user sees an indeterminate progress indicator
+- [x] Advanced: User can "reply" to any tweet on their home timeline
+- [x] The user that wrote the original tweet is automatically "@" replied in compose
+- [x] Advanced: User can click on a tweet to be taken to a "detail view" of that tweet
+- [x] Advanced: User can take favorite (and unfavorite) or reweet actions on a tweet
+- [x] Advanced: Improve the user interface and theme the app to feel twitter branded
+- [x] Advanced: User can search for tweets matching a particular query and see results
+- [ ] Bonus: User can view their direct messages (or send new ones)
+             
+Libraries used : PullToRefreshListView.
+
+Walkthrough of all user stories:
+
+Gif Image
+
+
+![Alt Text](Twitter2.gif)
+
+
+==========================
 Twitter Client
 ==========================
 Codepath assignment 3
@@ -22,6 +69,8 @@ Completed user stories:
 - [x] Advanced: User can tap a tweet to display a "detailed" view of that tweet
 - [x] Advanced: User can select "reply" from detail view to respond to a tweet. 
 - [x] Advanced: Improve the user interface and theme the app to feel "twitter branded"
+- [x] Advanced: User can open the twitter app offline and see last loaded tweets
+  * Tweets are persisted into sqlite and can be displayed from the local DB
 - [x] Bonus: User can see embedded image media within the tweet detail view
 - [x] Bonus: Compose activity is replaced with a modal overlay
              
@@ -32,7 +81,7 @@ Walkthrough of all user stories:
 Gif Image
 
 
-![Alt Text](Twitter2.gif)
+![Alt Text]()
 
 
 
