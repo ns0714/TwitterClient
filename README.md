@@ -39,9 +39,8 @@ Libraries used : PullToRefreshListView.
 Walkthrough of all user stories:
 
 Gif Image
+![Alt Text](TwitterAdvanced.gif)
 
-
-![Alt Text](Twitter2.gif)
 
 
 ==========================
@@ -81,8 +80,8 @@ Walkthrough of all user stories:
 Gif Image
 
 
-![Alt Text](TwitterAdvanced.gif)
 
+![Alt Text](Twitter2.gif)
 
 
 
