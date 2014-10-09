@@ -23,7 +23,8 @@
         android:layout_alignLeft="@+id/tvUser"
         android:layout_below="@+id/tvUser"
         android:text="@string/user_screenname"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/tvStatus"
@@ -32,6 +33,7 @@
         android:layout_alignLeft="@id/ivImg"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/ivImg"
+        android:layout_marginRight="10dp"
         android:autoLink="all"
         android:text="@string/body"
         android:textSize="15sp" />
@@ -67,6 +69,7 @@
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/etReplyTweet"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
         android:background="@drawable/rounded_button"
         android:text="@string/reply"
         android:textColor="@color/white" />
@@ -74,13 +77,13 @@
     <ImageView
         android:id="@+id/ivMediaUrl"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="190dp"
         android:layout_alignLeft="@+id/tvStatus"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/tvStatus"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher" />
+        android:scaleType="centerCrop" />
 
     <View
         android:id="@+id/lineBelowTime"
@@ -112,8 +115,8 @@
         android:paddingBottom="10dp"
         android:paddingTop="5dp"
         android:text="@string/retweet"
-        android:textSize="11sp"
-        android:textColor="@color/gray" />
+        android:textColor="@color/gray"
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/tvFavorites"
@@ -124,8 +127,8 @@
         android:layout_toRightOf="@+id/tvRetweets"
         android:paddingLeft="10dp"
         android:text="@string/favorites"
-        android:textSize="12sp"
-         android:textColor="@color/gray"/>
+        android:textColor="@color/gray"
+        android:textSize="12sp" />
 
     <View
         android:id="@+id/lineMedia"
@@ -142,55 +145,61 @@
         android:id="@+id/lineIcons"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_alignBottom="@+id/ivReplyIcon"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@color/gray"
         android:paddingTop="10dp" />
 
-    <ImageView
-        android:id="@+id/ivReplyIcon"
+    <LinearLayout
+        android:id="@+id/lIcons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tvRetweets"
-        android:layout_below="@id/lineMedia"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
-        android:paddingRight="75dp"
-        android:src="@drawable/reply_icon" />
-
-    <ImageView
-        android:id="@+id/ivRetweetIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/lineMedia"
         android:layout_below="@+id/tvRetweets"
-        android:layout_toRightOf="@+id/ivReplyIcon"
+        android:orientation="horizontal"
         android:paddingBottom="10dp"
-        android:paddingRight="75dp"
         android:paddingTop="10dp"
-        android:src="@drawable/ic_retweet" />
+        android:weightSum="4" >
 
-    <ImageView
-        android:id="@+id/ivFavoriteIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ivReplyIcon"
-        android:layout_toRightOf="@+id/ivRetweetIcon"
-        android:paddingBottom="10dp"
-        android:paddingRight="75dp"
-        android:paddingTop="10dp"
-        android:src="@drawable/favstar_off" />
+        <ImageView
+            android:id="@+id/ivReplyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reply"
+            android:layout_weight="1" />
 
-    <ImageView
-        android:id="@+id/ivShareIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/ivFavoriteIcon"
-        android:layout_marginRight="15dp"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
-        android:src="@drawable/ic_share_twitter" />
+        <ImageView
+            android:id="@+id/ivRetweetIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_retweet"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/ivFavoriteIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_fav_star_off"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/ivShareIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_share_twitter"
+            android:layout_weight="1" />
+    </LinearLayout>
+     <View
+        android:id="@+id/lineBelowIcons"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/gray"
+        android:layout_below="@id/lIcons"
+        android:paddingTop="10dp" />
 
 </RelativeLayout>

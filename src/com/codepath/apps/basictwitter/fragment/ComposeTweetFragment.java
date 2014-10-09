@@ -31,6 +31,7 @@ public class ComposeTweetFragment extends DialogFragment implements
 	private EditText etTweetMsg;
 	private static User currUser;
 	private String status;
+	private static String userName;
 	int totalChars = 140;
 
 	public ComposeTweetFragment() {
@@ -41,10 +42,11 @@ public class ComposeTweetFragment extends DialogFragment implements
 		void onFinishedComposingStatus(String status);
 	}
 
-	public static ComposeTweetFragment newInstance(String title, User user) {
+	public static ComposeTweetFragment newInstance(String title, User user, String screenName) {
 		ComposeTweetFragment dialog = new ComposeTweetFragment();
 		currUser = new User();
 		currUser = user;
+		userName = screenName;
 		dialog.setStyle(dialog.STYLE_NO_FRAME, android.R.style.Theme_Holo_Light);
 		return dialog;
 	}
@@ -52,7 +54,6 @@ public class ComposeTweetFragment extends DialogFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		setUpDialog();
 
 		View view = inflater.inflate(R.layout.compose_tweet, container);
@@ -88,7 +89,9 @@ public class ComposeTweetFragment extends DialogFragment implements
 
 			}
 		};
-
+		if(!(userName.equals(""))){
+			etTweetMsg.setText(getResources().getString(R.string.user_id)+userName);
+		}
 		etTweetMsg.addTextChangedListener(mTextEditorWatcher);
 
 		btnTweet.setOnClickListener(this);
@@ -97,7 +100,6 @@ public class ComposeTweetFragment extends DialogFragment implements
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.btnTweet: {
 

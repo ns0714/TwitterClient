@@ -1,14 +1,13 @@
 package com.codepath.apps.basictwitter.activities;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,34 +15,33 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 
 import com.codepath.apps.basictwitter.R;
-import com.codepath.apps.basictwitter.adapter.TwitterArrayAdapter;
 import com.codepath.apps.basictwitter.client.TwitterApplication;
 import com.codepath.apps.basictwitter.client.TwitterClient;
 import com.codepath.apps.basictwitter.fragment.ComposeTweetFragment;
 import com.codepath.apps.basictwitter.fragment.ComposeTweetFragment.ComposeTweetFragmentListener;
-import com.codepath.apps.basictwitter.listener.EndlessScrollListener;
+import com.codepath.apps.basictwitter.fragment.HomeTimelineFragment;
+import com.codepath.apps.basictwitter.fragment.MentionsTimelineFragment;
+import com.codepath.apps.basictwitter.helper.NetworkCheckHelper;
+import com.codepath.apps.basictwitter.listener.FragmentTabListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
-
 public class TimelineActivity extends FragmentActivity implements
 		ComposeTweetFragmentListener {
 
-	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> aTweets;
-	private PullToRefreshListView lvTweets;
-	private long max_id = 0;
-	private long since_id = 1;
 	private User user;
+	private TwitterClient client;
 	private String tweetMsg;
+	private HomeTimelineFragment homefrag;
+	private SearchView searchView;
+	private String srchQuery;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,125 +49,124 @@ public class TimelineActivity extends FragmentActivity implements
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
 		getUserCredntials();
-
-		lvTweets = (PullToRefreshListView) findViewById(R.id.lvTweets);
-		tweets = new ArrayList<Tweet>();
-		aTweets = new TwitterArrayAdapter(this, tweets);
-		lvTweets.setAdapter(aTweets);
-
-		if (!isNetworkAvailable()) {
-			Toast.makeText(this, getResources().getString(R.string.no_network),
-					Toast.LENGTH_SHORT).show();
-		}
-
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				populateTimeline();
-			}
-		});
-
-		lvTweets.setOnRefreshListener(new OnRefreshListener() {
-
-			@Override
-			public void onRefresh() {
-				// /aTweets.clear();
-				// max_id =0;
-				tweets.clear();
-				fetchTimelineAsync();
-			}
-		});
+		setupTabs();
 	}
 
-	private void fetchTimelineAsync() {
-		// tweets.clear();
-		max_id = 0;
+	private void setupTabs() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setStackedBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
 
-		populateTimeline();
-		lvTweets.onRefreshComplete();
-	}
+		Tab home = actionBar.newTab()
+				.setText("Home")
+				// .setIcon(R.drawable.ic_launcher)
+				.setTag("HomeTimelineFragment")
+				.setTabListener(
+						new FragmentTabListener<HomeTimelineFragment>(
+								R.id.flContainer, this, "home",
+								HomeTimelineFragment.class));
+		actionBar.addTab(home);
+		actionBar.selectTab(home);
 
-	private void populateTimeline() {
-		// TODO Auto-generated method stub
-		if (isNetworkAvailable()) {
-			if (tweets.size() > 0) {
-				max_id = tweets.get(tweets.size() - 1).getUid();
-			}
-			client.getHomeTimeline(new JsonHttpResponseHandler() {
+		Tab mention = actionBar.newTab()
+				.setText("Mentions")
+				// .setIcon(R.drawable.ic_launcher)
+				.setTag("MentionsTimelineFragment")
+				.setTabListener(
+						new FragmentTabListener<MentionsTimelineFragment>(
+								R.id.flContainer, this, "mentions",
+								MentionsTimelineFragment.class));
 
-				@Override
-				public void onSuccess(JSONArray json) {
-					aTweets.addAll(Tweet.fromJSON(json));
-					aTweets.notifyDataSetChanged();
-					Log.d("DEBUG", json.toString());
-				};
-
-				@Override
-				public void onFailure(Throwable e, JSONObject s) {
-					// TODO Auto-generated method stub
-					Toast.makeText(getApplicationContext(), "JSON failed",
-							Toast.LENGTH_SHORT).show();
-					Log.d("DEBUG", e.toString());
-					Log.d("DEBUG", s.toString());
-				}
-			}, since_id, max_id);
-		} else {
-			Toast.makeText(getApplicationContext(),
-					getResources().getString(R.string.no_network),
-					Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	public void getUserCredntials() {
-
-		client.getUserCredentials(new JsonHttpResponseHandler() {
-
-			@Override
-			public void onSuccess(JSONObject jsonObj) {
-				// TODO Auto-generated method stub
-				user = User.fromJSONToUser(jsonObj);
-				Log.d("DEBUG", jsonObj.toString());
-			}
-
-			@Override
-			public void onFailure(Throwable e, JSONObject js) {
-				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(),
-						getResources().getString(R.string.failed),
-						Toast.LENGTH_SHORT).show();
-				Log.d("DEBUG", e.toString());
-				Log.d("DEBUG", js.toString());
-			}
-		});
+		actionBar.addTab(mention);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.compose_tweet, menu);
+		inflater.inflate(R.menu.profile, menu);
+		inflater.inflate(R.menu.message, menu);
+		inflater.inflate(R.menu.search, menu);
+		MenuItem searchItem = menu.findItem(R.id.search);
+
+		searchView = (SearchView) searchItem.getActionView();
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				// perform query here
+				srchQuery = query.trim();
+
+				InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				im.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+				newImageSearch();
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				return false;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	public void newImageSearch() {
+		Intent i = new Intent(this, SearchActivity.class);
+		i.putExtra("query", srchQuery);
+		startActivity(i);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 		case R.id.compose_tweet:
 			FragmentManager frag = getSupportFragmentManager();
 			ComposeTweetFragment diag = ComposeTweetFragment.newInstance(
-					"Compose Tweets", user);
+					"Compose Tweets", user, "");
 			diag.show(frag, "compose_tweet");
+
 			return true;
 		}
 		return false;
 	}
 
-	private Boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager
-				.getActiveNetworkInfo();
-		return activeNetworkInfo != null
-				&& activeNetworkInfo.isConnectedOrConnecting();
+	public void onProfileView(MenuItem mi) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		i.putExtra("user", user);
+		startActivity(i);
+	}
+	
+	public void getDirectMessages(MenuItem mi) {
+		Intent i = new Intent(this, DirectMessageActivity.class);
+		i.putExtra("user", user);
+		startActivity(i);
+	}
+	
+
+	public void getUserCredntials() {
+
+		if (NetworkCheckHelper.isNetworkAvailable(this)) {
+
+			client.getUserCredentials(new JsonHttpResponseHandler() {
+
+				@Override
+				public void onSuccess(JSONObject jsonObj) {
+					user = User.fromJSONToUser(jsonObj);
+					Log.d("DEBUG", jsonObj.toString());
+				}
+
+				@Override
+				public void onFailure(Throwable e, JSONObject js) {
+					Log.d("DEBUG", e.toString());
+					Log.d("DEBUG", js.toString());
+				}
+			});
+		} else {
+			Toast.makeText(this, getResources().getString(R.string.no_network),
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
@@ -179,35 +176,53 @@ public class TimelineActivity extends FragmentActivity implements
 	}
 
 	private void postStatusMessage(String tweetMsg) {
-		client.postStatusUpdates(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONObject json) {
-				Tweet tweet = Tweet.fromJSON(json);
-				max_id = tweet.getUid() + 1;
 
-				aTweets.insert(tweet, 0);
+		if (NetworkCheckHelper.isNetworkAvailable(this)) {
+			showProgressBar();
+			client.postStatusUpdates(new JsonHttpResponseHandler() {
+				@Override
+				public void onSuccess(JSONObject json) {
+					Tweet tweet = Tweet.fromJSON(json);
+					initFragment();
+					homefrag.insert(tweet, 0);
+					Log.d("DEBUG", json.toString());
+					hideProgressBar();
+				}
 
-				Log.d("DEBUG", json.toString());
-			}
-
-			@Override
-			public void onFailure(Throwable arg0, String arg1) {
-				// TODO Auto-generated method stub
-				Log.d("DEBUG", arg1);
-			}
-		}, tweetMsg);
+				@Override
+				public void onFailure(Throwable arg0, String arg1) {
+					Log.d("DEBUG", arg1);
+				}
+			}, tweetMsg);
+		} else {
+			Toast.makeText(this, getResources().getString(R.string.no_network),
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		if (requestCode == 50) {
 			if (resultCode == RESULT_OK) {
 				Tweet replyTweet = (Tweet) data.getSerializableExtra("tweet");
 				Toast.makeText(this, Tweet.getTweet().getBody(),
 						Toast.LENGTH_SHORT).show();
-				aTweets.insert(replyTweet, 0);
+				initFragment();
+				homefrag.insert(replyTweet, 0);
 			}
 		}
 	}
+
+	protected void initFragment() {
+		homefrag = (HomeTimelineFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.flContainer);
+	}
+	
+	public void showProgressBar() {
+        setProgressBarIndeterminateVisibility(true); 
+    }
+	
+	public void hideProgressBar() {
+    	setProgressBarIndeterminateVisibility(false); 
+    }
 }

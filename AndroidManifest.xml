@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -50,8 +50,32 @@
             android:label="@string/title_activity_timeline" >
         </activity>
         <activity
-            android:name="com.codepath.apps.basictwitter.activities.FullTweetActivity"
+            android:name=".activities.FullTweetActivity"
             android:label="@string/title_activity_full_tweet" >
+        </activity>
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:label="@string/title_activity_profile" >
+        </activity>
+        <activity
+            android:name=".activities.SearchActivity"
+            android:label="@string/title_activity_search" >
+        </activity>
+        <activity
+            android:name=".activities.UserListActivity"
+            android:label="@string/title_activity_user_list" >
+        </activity>
+        <activity
+            android:name=".activities.FullImageDisplayActivity"
+            android:label="@string/title_activity_full_image_display" >
+        </activity>
+        <activity
+            android:name=".activities.DirectMessageActivity"
+            android:label="@string/title_activity_direct_message" >
+        </activity>
+        <activity
+            android:name="com.codepath.apps.basictwitter.activities.DirectMessageActivity"
+            android:label="@string/title_activity_direct_message" >
         </activity>
     </application>
 

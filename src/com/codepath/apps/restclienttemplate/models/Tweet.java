@@ -4,17 +4,25 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ClipData.Item;
 import android.text.format.DateUtils;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 
 @Table(name = "Tweets")
 public class Tweet extends Model implements Serializable{
@@ -23,11 +31,11 @@ public class Tweet extends Model implements Serializable{
 	
 	@Column(name ="body")
 	private String body;
-	@Column(name ="uid")
+	@Column(name ="uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
 	@Column(name ="createdAt")
 	private String createdAt;
-	@Column(name ="user")
+	@Column(name ="user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
 	@Column(name = "mediaUrl")
 	private String mediaUrl;
@@ -39,7 +47,18 @@ public class Tweet extends Model implements Serializable{
 	private boolean retweeted;
 	@Column(name = "favorited")
 	private boolean favorited;
+	private long id_str;
+	private boolean is_retweeted;
 	
+	public long isId_str() {
+		return id_str;
+	}
+
+	static Tweet tweet;
+	
+	public Tweet() {
+		super();
+	}
 	
 	public boolean isRetweeted() {
 		return retweeted;
@@ -61,9 +80,6 @@ public class Tweet extends Model implements Serializable{
 		return tweet;
 	}
 
-	static Tweet tweet;
-	
-	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -89,7 +105,6 @@ public class Tweet extends Model implements Serializable{
 	}
 
 	public static ArrayList<Tweet> fromJSON(JSONArray jsonArray) {
-		// TODO Auto-generated method stub
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>(jsonArray.length());
 
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -112,6 +127,7 @@ public class Tweet extends Model implements Serializable{
 	public static Tweet fromJSON(JSONObject jsonObject) {
 		Tweet tweet = new Tweet();
 		JSONObject entitiesJson;
+		JSONObject retweetedJson;
 		JSONArray mediaJson;
 		try {
 			tweet.body = jsonObject.getString("text");
@@ -124,19 +140,33 @@ public class Tweet extends Model implements Serializable{
 			
 			tweet.retweeted = jsonObject.getBoolean("retweeted");
 			tweet.favorited = jsonObject.getBoolean("favorited");
-			
+			tweet.id_str = jsonObject.getLong("id_str");
+			retweetedJson = jsonObject.getJSONObject("retweeted_status");
 			if(entitiesJson != JSONObject.NULL){
 				mediaJson = entitiesJson.getJSONArray("media");
 				tweet.mediaUrl = mediaJson.getJSONObject(0).getString("media_url");
 			}
+			
+			if(retweetedJson != JSONObject.NULL){
+				tweet.is_retweeted = true;
+				System.out.println("YAYYYYYY" + tweet.getBody());
+			}
 		} catch (JSONException ex) {
-			//ex.printStackTrace();
 		}
 		return tweet;
 	}
 	
+	public boolean isIs_retweeted() {
+		return is_retweeted;
+	}
+
+	public long getId_str() {
+		return id_str;
+	}
+
 	public String getRelativeTimeAgo(String rawJsonDate) {
 		String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+		String time = "";
 		SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
 		sf.setLenient(true);
 	 
@@ -149,8 +179,47 @@ public class Tweet extends Model implements Serializable{
 			e.printStackTrace();
 		}	 
 		String[] relativeTime = relativeDate.split(" ");
-		String time = relativeTime[0] + relativeTime[1].charAt(0);
+		//System.out.println("@@@@" + relativeDate);
+		if(relativeTime.length > 1){
+			time = relativeTime[0] + relativeTime[1].charAt(0);
+		}else{
+			time = relativeTime[0];
+		}
+		System.out.println("!!!" +time);
 		return time;
 	}
 	
+	public String getFormatedTime(long createdTime) {
+		String formattedTime = "";
+		Calendar instance = Calendar.getInstance();
+		instance.setTimeInMillis(createdTime);
+		Date creationTime = instance.getTime();
+
+		long diffInMs = (new Date(System.currentTimeMillis()).getTime() / 1000)
+				- creationTime.getTime();
+		long diffInHours = TimeUnit.SECONDS.toHours(diffInMs);
+		long diffInMins = TimeUnit.SECONDS.toMinutes(diffInMs);
+		long diffInDays = TimeUnit.SECONDS.toDays(diffInMins);
+
+		if (diffInMins < 60) {
+			formattedTime = diffInMins + "m";
+		} else if (diffInHours >= 1 && diffInHours < 24) {
+			formattedTime = diffInHours + "h";
+		} else if (diffInDays >= 1) {
+			formattedTime = diffInDays +"d";
+		}
+
+		return formattedTime;
+	}
+	
+	public static List<Tweet> getAll() {
+        // This is how you execute a query
+        return new Select()
+          .from(Tweet.class)
+          .execute();
+    }
+	
+	public static void deleteAll(){
+		new Delete().from(Tweet.class).execute();
+	}
 }
